@@ -31,18 +31,6 @@ SUCCESS = "\x1b[1;32m [SUCCESS]: "
 DEBUG_VALUE = "debug"
 
 
-def remove_open_source_files():
-    file_names = ["CONTRIBUTORS.txt", "LICENSE"]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_gplv3_files():
-    file_names = ["COPYING"]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
 def remove_pycharm_files():
     idea_dir_path = ".idea"
     if os.path.exists(idea_dir_path):
@@ -53,56 +41,8 @@ def remove_pycharm_files():
         shutil.rmtree(docs_dir_path)
 
 
-def remove_docker_files():
-    shutil.rmtree("compose")
-
-    file_names = ["local.yml", "production.yml", ".dockerignore"]
-    for file_name in file_names:
-        os.remove(file_name)
 
 
-def remove_utility_files():
-    shutil.rmtree("utility")
-
-
-def remove_heroku_files():
-    file_names = ["Procfile", "runtime.txt", "requirements.txt"]
-    for file_name in file_names:
-        if (
-            file_name == "requirements.txt"
-            and "{{ cookiecutter.use_travisci }}".lower() == "y"
-        ):
-            # don't remove the file if we are using travisci but not using heroku
-            continue
-        os.remove(file_name)
-
-
-def remove_gulp_files():
-    file_names = ["gulpfile.js"]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_packagejson_file():
-    file_names = ["package.json"]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_celery_files():
-    file_names = [
-        os.path.join("config", "celery_app.py"),
-        os.path.join("{{ cookiecutter.project_slug }}", "users", "tasks.py"),
-        os.path.join(
-            "{{ cookiecutter.project_slug }}", "users", "tests", "test_tasks.py"
-        ),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_dottravisyml_file():
-    os.remove(".travis.yml")
 
 
 def append_to_project_gitignore(path):
@@ -113,7 +53,7 @@ def append_to_project_gitignore(path):
 
 
 def generate_random_string(
-    length, using_digits=False, using_ascii_letters=False, using_punctuation=False
+    length, using_digits=True, using_ascii_letters=True, using_punctuation=False
 ):
     """
     Example:
@@ -170,6 +110,7 @@ def set_django_secret_key(file_path):
     return django_secret_key
 
 
+
 def set_django_admin_url(file_path):
     django_admin_url = set_flag(
         file_path,
@@ -186,8 +127,6 @@ def generate_random_user():
     return generate_random_string(length=32, using_ascii_letters=True)
 
 
-def generate_postgres_user(debug=False):
-    return DEBUG_VALUE if debug else generate_random_user()
 
 
 def set_postgres_user(file_path, value):
@@ -207,23 +146,6 @@ def set_postgres_password(file_path, value=None):
     return postgres_password
 
 
-def set_celery_flower_user(file_path, value):
-    celery_flower_user = set_flag(
-        file_path, "!!!SET CELERY_FLOWER_USER!!!", value=value
-    )
-    return celery_flower_user
-
-
-def set_celery_flower_password(file_path, value=None):
-    celery_flower_password = set_flag(
-        file_path,
-        "!!!SET CELERY_FLOWER_PASSWORD!!!",
-        value=value,
-        length=64,
-        using_digits=True,
-        using_ascii_letters=True,
-    )
-    return celery_flower_password
 
 
 def append_to_gitignore_file(s):
@@ -231,33 +153,25 @@ def append_to_gitignore_file(s):
         gitignore_file.write(s)
         gitignore_file.write(os.linesep)
 
+# TODO(mk-dv): Формируем словарь, передаем его в set_flags.
+def set_flags_in_envs(**flags, debug=False):
+    local_django_envs_path = os.path.join("local.env")
+    with open(local_django_env_path, 'w') as env_file:
 
-def set_flags_in_envs(postgres_user, celery_flower_user, debug=False):
-    local_django_envs_path = os.path.join(".envs", ".local", ".django")
-    production_django_envs_path = os.path.join(".envs", ".production", ".django")
-    local_postgres_envs_path = os.path.join(".envs", ".local", ".postgres")
-    production_postgres_envs_path = os.path.join(".envs", ".production", ".postgres")
+        env.
 
-    set_django_secret_key(production_django_envs_path)
-    set_django_admin_url(production_django_envs_path)
 
-    set_postgres_user(local_postgres_envs_path, value=postgres_user)
-    set_postgres_password(
-        local_postgres_envs_path, value=DEBUG_VALUE if debug else None
-    )
-    set_postgres_user(production_postgres_envs_path, value=postgres_user)
-    set_postgres_password(
-        production_postgres_envs_path, value=DEBUG_VALUE if debug else None
-    )
-
-    set_celery_flower_user(local_django_envs_path, value=celery_flower_user)
-    set_celery_flower_password(
-        local_django_envs_path, value=DEBUG_VALUE if debug else None
-    )
-    set_celery_flower_user(production_django_envs_path, value=celery_flower_user)
-    set_celery_flower_password(
-        production_django_envs_path, value=DEBUG_VALUE if debug else None
-    )
+    # set_django_secret_key(production_django_envs_path)
+    # set_django_admin_url(production_django_envs_path)
+    #
+    # set_postgres_user(local_postgres_envs_path, value=postgres_user)
+    # set_postgres_password(
+    #     local_postgres_envs_path, value=DEBUG_VALUE if debug else None
+    # )
+    # set_postgres_user(production_postgres_envs_path, value=postgres_user)
+    # set_postgres_password(
+    #     production_postgres_envs_path, value=DEBUG_VALUE if debug else None
+    # )
 
 
 def set_flags_in_settings_files():
@@ -265,92 +179,45 @@ def set_flags_in_settings_files():
     set_django_secret_key(os.path.join("config", "settings", "test.py"))
 
 
-def remove_envs_and_associated_files():
-    shutil.rmtree(".envs")
-    os.remove("merge_production_dotenvs_in_dotenv.py")
-
-
-def remove_celery_compose_dirs():
-    shutil.rmtree(os.path.join("compose", "local", "django", "celery"))
-    shutil.rmtree(os.path.join("compose", "production", "django", "celery"))
-
-
-def remove_node_dockerfile():
-    shutil.rmtree(os.path.join("compose", "local", "node"))
-
-
-def remove_aws_dockerfile():
-    shutil.rmtree(os.path.join("compose", "production", "aws"))
-
-
 def main():
-    debug = "{{ cookiecutter.debug }}".lower() == "y"
-
-    set_flags_in_envs(
-        DEBUG_VALUE if debug else generate_random_user(),
-        DEBUG_VALUE if debug else generate_random_user(),
-        debug=debug,
-    )
-    set_flags_in_settings_files()
-
-    if "{{ cookiecutter.open_source_license }}" == "Not open source":
-        remove_open_source_files()
-    if "{{ cookiecutter.open_source_license}}" != "GPLv3":
-        remove_gplv3_files()
-
+    debug = ('{{ cookiecutter.debug }}'.lower() == 'y')
     if "{{ cookiecutter.use_pycharm }}".lower() == "n":
         remove_pycharm_files()
+    # TODO(mk-dv): Rename.
+    envs = {}
 
-    if "{{ cookiecutter.use_docker }}".lower() == "y":
-        remove_utility_files()
-    else:
-        remove_docker_files()
 
-    if (
-        "{{ cookiecutter.use_docker }}".lower() == "y"
-        and "{{ cookiecutter.cloud_provider}}".lower() != "aws"
-    ):
-        remove_aws_dockerfile()
+    append_to_gitignore_file("production.env")
+    if "{{ cookiecutter.keep_develop_env_in_vcs }}".lower() == "n":
+        append_to_gitignore_file("develop.env")
 
-    if "{{ cookiecutter.use_heroku }}".lower() == "n":
-        remove_heroku_files()
-
-    if (
-        "{{ cookiecutter.use_docker }}".lower() == "n"
-        and "{{ cookiecutter.use_heroku }}".lower() == "n"
-    ):
-        if "{{ cookiecutter.keep_local_envs_in_vcs }}".lower() == "y":
-            print(
-                INFO + ".env(s) are only utilized when Docker Compose and/or "
-                "Heroku support is enabled so keeping them does not "
-                "make sense given your current setup." + TERMINATOR
-            )
-        remove_envs_and_associated_files()
-    else:
-        append_to_gitignore_file(".env")
-        append_to_gitignore_file(".envs/*")
-        if "{{ cookiecutter.keep_local_envs_in_vcs }}".lower() == "y":
-            append_to_gitignore_file("!.envs/.local/")
-
-    if "{{ cookiecutter.js_task_runner}}".lower() == "none":
-        remove_gulp_files()
-        remove_packagejson_file()
-        if "{{ cookiecutter.use_docker }}".lower() == "y":
-            remove_node_dockerfile()
-
-    if "{{ cookiecutter.cloud_provider}}".lower() == "none":
-        print(
-            WARNING + "You chose not to use a cloud provider, "
-            "media files won't be served in production." + TERMINATOR
+    if "{{ cookiecutter.use_postgresql }}".lower() == "y":
+        # TODO(mk-dv): Add values check.
+        postgresql_database_name = input(
+            'Database name [{{ cookiecutter.project_slug }}]:'
         )
+        postgresql_user_name = input('PostgreSQL username [postgres]:')
+        if not postgresql_user_name:
+            postgresql_user_name = 'postgres'
 
-    if "{{ cookiecutter.use_celery }}".lower() == "n":
-        remove_celery_files()
-        if "{{ cookiecutter.use_docker }}".lower() == "y":
-            remove_celery_compose_dirs()
+        postgresql_user_password = input(
+            'PostgreSQL password[generate password]:'
+        )
+        if not postgresql_user_password:
+            postgresql_user_password = generate_random_string(length=10)
 
-    if "{{ cookiecutter.use_travisci }}".lower() == "n":
-        remove_dottravisyml_file()
+
+        set_flags_in_envs(
+            POSTGRESQL_DATABASE_NAME=postgresql_database_name,
+            POSTGRESQL_USER_NAME=postgresql_user_name,
+            POSTGRESQL_USER_PASSWORD=postgresql_user_password,
+            debug=debug,
+        )
+    # TODO(mk-dv): This gettings flags from env?
+    set_flags_in_settings_files()
+
+
+
 
     print(SUCCESS + "Project initialized, keep up the good work!" + TERMINATOR)
 
