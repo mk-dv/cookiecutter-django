@@ -331,7 +331,9 @@ pip-selfcheck.json
 
 .pytest_cache/
 
-.ipython/
+### IPython
+#.ipython/
 
 # Ignore dynaconf secret files
 .secrets.*
+!.secrets.example

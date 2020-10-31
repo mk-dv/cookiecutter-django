@@ -6,7 +6,8 @@ DEBUG = false
 
 # Email
 # ------------------------------------------------------------------------------
-EMAIL_HOST = ''
+#EMAIL_HOST = ''
+#EMAIL_PORT =
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_TIMEOUT = 5
 
@@ -17,17 +18,27 @@ EMAIL_TIMEOUT = 5
 # ------------------------------------------------------------------------------
 DEBUG = true
 
-DJANGO_SETTINGS_MODULE = config.settings.local
+DJANGO_SETTINGS_MODULE = config.settings
 
 SECRET_KEY = ''
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+
+# Applications
+# ------------------------------------------------------------------------------
+# django-extensions
+# ------------------------------------------------------------------------------
+# https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
+INSTALLED_APPS = ["django_extensions"]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_URL = '/static/'
 
-IPYTHONDIR = ''/app/.ipython'
+
+# IPython
+# ------------------------------------------------------------------------------
+IPYTHONDIR = '/app/.ipython'
 
 
 # Email

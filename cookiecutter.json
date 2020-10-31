@@ -17,5 +17,9 @@
   "debug": [
     "n",
     "y"
+  ],
+  "keep_config_in_git": [
+    "n",
+    "y"
   ]
 }
