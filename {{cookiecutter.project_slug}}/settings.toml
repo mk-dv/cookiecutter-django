@@ -1,0 +1,46 @@
+[production]
+# General
+# ------------------------------------------------------------------------------
+DEBUG = false
+
+
+# Email
+# ------------------------------------------------------------------------------
+EMAIL_HOST = ''
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_TIMEOUT = 5
+
+
+
+[development]
+# General
+# ------------------------------------------------------------------------------
+DEBUG = true
+
+DJANGO_SETTINGS_MODULE = config.settings.local
+
+SECRET_KEY = ''
+
+ALLOWED_HOSTS = []
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
+STATIC_URL = '/static/'
+
+IPYTHONDIR = ''/app/.ipython'
+
+
+# Email
+# ------------------------------------------------------------------------------
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+{% if cookiecutter.use_postgresql == 'y' -%}
+# PostgreSQL
+# ------------------------------------------------------------------------------
+DATABASES__default__ENGINE = 'django.db.backends.postgresql'
+
+DATABASES__default__NAME = '{{ cookiecutter.project_slug }}'
+
+DATABASES__default__USER = 'postgres'
+{%- endif %}

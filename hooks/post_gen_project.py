@@ -1,18 +1,8 @@
-"""
-NOTE:
-    the below code is to be maintained Python 2.x-compatible
-    as the whole Cookiecutter Django project initialization
-    can potentially be run in Python 2.x environment
-    (at least so we presume in `pre_gen_project.py`).
-
-TODO: ? restrict Cookiecutter Django project initialization to Python 3.x environments only
-"""
-from __future__ import print_function
-
 import os
 import random
 import shutil
 import string
+from dynaconf import loaders
 
 try:
     # Inspired by
@@ -99,6 +89,7 @@ def set_flag(file_path, flag, value=None, formatted=None, *args, **kwargs):
     return value
 
 
+
 def set_django_secret_key(file_path):
     django_secret_key = set_flag(
         file_path,
@@ -153,14 +144,17 @@ def append_to_gitignore_file(s):
         gitignore_file.write(s)
         gitignore_file.write(os.linesep)
 
+
+def set_flags_in_toml(path):
+    loaders.toml_loader.write('settings.toml', {'default': dict(asd='new_val')}, merge=True)
+
+
 # TODO(mk-dv): Формируем словарь, передаем его в set_flags.
-def set_flags_in_envs(**flags, debug=False):
-    local_django_envs_path = os.path.join("local.env")
-    with open(local_django_env_path, 'w') as env_file:
+def set_flags_in_config(**flags):
+    set_flags_in_toml(CONFIG_PATH, flags)
 
-        env.
-
-
+def set_flags_in_secrets(**secrets):
+    set_flags_in_toml(SECRETS_PATH, secrets)
     # set_django_secret_key(production_django_envs_path)
     # set_django_admin_url(production_django_envs_path)
     #
@@ -174,17 +168,15 @@ def set_flags_in_envs(**flags, debug=False):
     # )
 
 
-def set_flags_in_settings_files():
-    set_django_secret_key(os.path.join("config", "settings", "local.py"))
-    set_django_secret_key(os.path.join("config", "settings", "test.py"))
+# def set_flags_in_settings_files():
+#     set_django_secret_key(os.path.join("config", "settings", "local.py"))
+#     set_django_secret_key(os.path.join("config", "settings", "test.py"))
 
 
 def main():
     debug = ('{{ cookiecutter.debug }}'.lower() == 'y')
     if "{{ cookiecutter.use_pycharm }}".lower() == "n":
         remove_pycharm_files()
-    # TODO(mk-dv): Rename.
-    envs = {}
 
 
     append_to_gitignore_file("production.env")
@@ -213,6 +205,8 @@ def main():
             POSTGRESQL_USER_PASSWORD=postgresql_user_password,
             debug=debug,
         )
+        secret_key = generate_random_string(length=64)
+        set_secrets(SECRET_KEY=secret_key)
     # TODO(mk-dv): This gettings flags from env?
     set_flags_in_settings_files()
 

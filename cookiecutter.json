@@ -6,9 +6,9 @@
   "author_name": "@mk-dv",
   "domain_name": "example.com",
   "email": "{{ cookiecutter.author_name.lower()|replace(' ', '-') }}@example.com",
-  "app_name": "base",
+  "app_slug": "base",
   "TODO(mk-dv)":  "Check this filter.",
-  "app_config_name": "{{ cookiecutter.app_name.replace('_', ' ')|title()|replace(' ', '') }}",
+  "app_config_slug": "{{ cookiecutter.app_name.replace('_', ' ')|title()|replace(' ', '') }}",
   "use_postgres": [
     "n",
     "y"
